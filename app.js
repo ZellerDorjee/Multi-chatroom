@@ -1,47 +1,68 @@
-// 导入koa，和koa 1.x不同，在koa2中，我们导入的是一个class，因此用大写的Koa表示:
-const   Koa = require('koa') ,
-        http = require('http'), 
-        path = require('path');
-// 创建一个Koa对象表示web app本身:
-const app = new Koa();
+﻿var express = require('express')
+  , http = require('http')
+  , path = require('path');
 
-//引入解析post body的middlewa
-const bodyParser = require('koa-bodyparser');
-
-//导入koa-router
-const router = require('koa-router')();
-
-//引入websocket
+var app = express();
+var server = http.createServer(app);
 var WebSocketServer = require('ws').Server;
-var wss = new WebSocketServer({server : app});
-// 对于任何请求，app将调用该异步函数处理请求：
-app.use(async (ctx, next) => {
-    await next(); 
-});
-app.use(bodyParser());
-app.use(router.routes());
+var wss = new WebSocketServer({server : server});
+var colors = [ 'red', 'green', 'blue', 'magenta', 'purple', 'plum', 'orange' ];
+colors.sort(function(a,b) { return Math.random() > 0.5; } );
+var clients = [];
 
-router.get('/',async(ctx,next)=>{
-    ctx.response.body = `<h1>Index</h1>
-        <form action="/signin" method="post">
-            <p>Name: <input name="name" value="koa"></p>
-            <p>Password: <input name="password" type="password"></p>
-            <p><input type="submit" value="Submit"></p>
-        </form>`;
-})
-router.post('/signin', async (ctx, next) => {
-    console.log(ctx.request.body.name)
-    var name = ctx.request.body.name || '',
-        password = ctx.request.body.password || '';
-    console.log(`signin with name: ${name}, password: ${password}`);
-    if (name === 'koa' && password === '12345') {
-        ctx.response.body = `<h1>Welcome, ${name}!</h1>`;
-    } else {
-        ctx.response.body = `<h1>Login failed!</h1>
-        <p><a href="/">Try again</a></p>`;
+wss.on('connection', function(ws){
+clients.push(ws);
+var userName = false;
+var userColor = false;
+  ws.on('message', function(msg){
+    if(!userName){
+        userName = msg;
+        userColor = colors.shift();
+        ws.send(JSON.stringify({ type:'color', data: userColor }));
+        console.log(userName + ' login');
+    }else{
+        console.log(userName + ' say: ' + msg);
+        var obj = {
+          time: (new Date()).getTime(),
+          text: msg,
+          author: userName,
+          color: userColor
+        };
+        var json = JSON.stringify({type:'message', data: obj});
+         for (var i=0; i < clients.length; i++) {
+             clients[i].send(json);
+         }
     }
+  });
+  ws.on('close', function(){
+  var index = clients.indexOf(ws);
+  clients.splice(index, 1);
+  if(userName !== false && userColor != false){
+    colors.push(userColor);
+  }  
+  });
+  
 });
 
-// 在端口3000监听:
-app.listen(3000,'119.23.57.251');
-console.log('app started at port 3000...');
+app.configure(function(){
+  app.set('port', process.env.PORT || 3000);
+  app.set('views', __dirname + '/views');
+  app.use(express.favicon());
+  app.use(express.logger('dev'));
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(path.join(__dirname, 'public')));
+});
+
+app.configure('development', function(){
+  app.use(express.errorHandler());
+});
+
+app.get('/', function(req, res){
+res.sendfile('views/chat.html');
+});
+
+server.listen(app.get('port'), function(){
+  console.log("Express server listening on port " + app.get('port'));
+});

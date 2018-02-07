@@ -22,8 +22,10 @@
   },
   "homepage": "https://github.com/ZellerDorjee/yjj-node#readme",
   "dependencies": {
+    "express": "3.0.1",
     "koa": "2.0.0",
     "koa-bodyparser": "^4.2.0",
-    "koa-router": "^7.3.0"
+    "koa-router": "^7.3.0",
+    "ws": "^4.0.0"
   }
 }
