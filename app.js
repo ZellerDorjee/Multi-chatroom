@@ -46,13 +46,13 @@ var userColor = false;
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
-  app.set('views', __dirname + '/views');
+  app.set('src', __dirname + '/src');
   app.use(express.favicon());
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'views')));
+  app.use(express.static(path.join(__dirname, 'src')));
 });
 
 app.configure('development', function(){
@@ -60,7 +60,7 @@ app.configure('development', function(){
 });
 
 app.get('/', function(req, res){
-res.sendfile('views/index.html');
+res.sendfile('src/index.html');
 });
 
 server.listen(app.get('port'), function(){
