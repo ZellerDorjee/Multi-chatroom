@@ -52,7 +52,7 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.static(path.join(__dirname, 'views')));
 });
 
 app.configure('development', function(){
@@ -60,7 +60,7 @@ app.configure('development', function(){
 });
 
 app.get('/', function(req, res){
-res.sendfile('views/chat.html');
+res.sendfile('views/index.html');
 });
 
 server.listen(app.get('port'), function(){
