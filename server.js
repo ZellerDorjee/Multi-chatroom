@@ -19,19 +19,36 @@ server.listen(3000, function () {
 io.on('connection',function(socket){
     console.log('a user connected',socket.id);
     let room;
-    //接受并处理客户端发送的foo事件
     socket.on('join',function(data){
-        console.log('join room',data)
-        room=data;
+        console.log(data)
+        let da=JSON.parse(data)
+        socket.nickname=da.username;
+        room=da.roomId;
         socket.join(room);
         socket.emit('joinSuccess')
         io.to(room).emit('someJoin',socket.nickname);
     })
+    //leave room
     socket.on('leave',function(data){
-        console.log('leave room',data)
         socket.leave(room);
+        socket.emit('leaveSuccess')
         io.to(room).emit('someLeave',socket.nickname);
     })
+    //new message get
+    socket.on('postMsg', function(msg, status) {
+        socket.to(room).emit('newMsg', socket.nickname, msg, status);
+    });
+    //detect is at room
+    socket.on('detect', function(data) {
+        let da=JSON.parse(data)
+        if(room!=da.roomId){
+            socket.nickname=da.username;
+            room=da.roomId;
+            socket.join(room);
+            io.to(room).emit('someJoin',socket.nickname);
+        }
+        socket.emit('joinSuccess')
+    });
     //user login
     socket.on('login',function(nickname){
         console.log(nickname+'try login')
@@ -56,13 +73,5 @@ io.on('connection',function(socket){
             socket.broadcast.emit('system', socket.nickname, users.length, 'logout');
         }
         console.log('user disconnect')
-    });
-    //new message get
-    socket.on('postMsg', function(msg, color) {
-        socket.to(room).emit('newMsg', socket.nickname, msg, color);
-    });
-    //new image get
-    socket.on('img', function(imgData, color) {
-        socket.to(room).emit('newImg', socket.nickname, imgData, color);
     });
 })
