@@ -26,13 +26,13 @@ io.on('connection',function(socket){
             // 将用户昵称加入房间名单中
         if (roomInfo[room] == undefined) {
             roomInfo[room] = {};
-            roomInfo[room].listenNum = da.listenNum;
             roomInfo[room].list = [];
         }
         let index = roomInfo[room].list.indexOf(token);
         if (index == -1) {
             roomInfo[room].list.push(token);
         }
+        roomInfo[room].listenNum = da.listenNum;
         socket.emit('joinSuccess',roomInfo[room].listenNum);
         socket.emit('test')
         io.to(room).emit('someJoin',roomInfo[room].list.length,roomInfo[room].listenNum);
@@ -69,13 +69,13 @@ io.on('connection',function(socket){
                 // 将用户昵称加入房间名单中
             if (!roomInfo[room]) {
                 roomInfo[room] = {};
-                roomInfo[room].listenNum = da.listenNum;
                 roomInfo[room].list = [];
             }
             let index = roomInfo[room].list.indexOf(token);
             if (index == -1) {
                 roomInfo[room].list.push(token);
             }
+            roomInfo[room].listenNum = da.listenNum;
             socket.emit('joinSuccess',roomInfo[room].listenNum);
             io.to(room).emit('someJoin',roomInfo[room].list.length,roomInfo[room].listenNum);
         }
