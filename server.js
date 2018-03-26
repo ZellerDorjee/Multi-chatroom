@@ -13,7 +13,6 @@ server.listen(3000, function () {
 
   // 房间名单
 var roomInfo = {};
-
 io.on('connection',function(socket){
     let room='',
         token='';
@@ -32,7 +31,6 @@ io.on('connection',function(socket){
         if (index == -1) {
             roomInfo[room].push(token);
         }
-        console.log(roomInfo[room].length)
         socket.emit('joinSuccess',roomInfo[room].length);
         socket.emit('test')
         io.to(room).emit('someJoin',roomInfo[room].length);
@@ -42,6 +40,7 @@ io.on('connection',function(socket){
         if(room==''){
             socket.emit('leaveSuccess')
         }else {
+            console.log(socket.nickname+'leave room')
             socket.leave(room);
             if(roomInfo[room]){
                 var index = roomInfo[room].indexOf(token);
@@ -92,26 +91,8 @@ io.on('connection',function(socket){
             io.to(room).emit('someLeave',roomInfo[room].length);
         }
     });
-    //new image get
-    // socket.on('img', function(imgData, color) {
-    //     socket.to(room).emit('newImg', socket.nickname, imgData, color);
-    // });
-    //new voice get
-    // socket.on('voice', function(voice, color) {
-    //     socket.to(room).emit('newVoice', socket.nickname, voice, color);
-    // });
-    //user login
-    // socket.on('login',function(nickname){
-    //     console.log(nickname+'try login')
-    //     if(users.indexOf(nickname)>-1){
-    //         socket.emit('nickExisted')
-    //     }else {
-    //         console.log(nickname+'login success')
-    //         users.push(nickname)
-    //         socket.nickname=nickname;
-    //         socket.userIndex=users.length;
-    //         socket.emit('loginSuccess');
-    //         io.sockets.emit('system', nickname, users.length, 'login');
-    //     }
-    // })
+    //delete message
+    socket.on('recallMsg', function(id, type) {
+        socket.to(room).emit('deleteMsg',id, type);
+    });
 })
