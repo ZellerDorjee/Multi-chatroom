@@ -26,6 +26,7 @@ io.on('connection',function(socket){
             // 将用户昵称加入房间名单中
         if (roomInfo[room] == undefined) {
             roomInfo[room] = {};
+            roomInfo[room].listenNum = da.listenNum;
             roomInfo[room].list = [];
         }
         let index = roomInfo[room].list.indexOf(token);
