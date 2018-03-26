@@ -25,15 +25,16 @@ io.on('connection',function(socket){
         socket.join(room);
             // 将用户昵称加入房间名单中
         if (roomInfo[room] == undefined) {
-            roomInfo[room] = [];
+            roomInfo[room] = {};
+            roomInfo[room].list = [];
         }
-        let index = roomInfo[room].indexOf(token);
+        let index = roomInfo[room].list.indexOf(token);
         if (index == -1) {
-            roomInfo[room].push(token);
+            roomInfo[room].list.push(token);
         }
-        socket.emit('joinSuccess',roomInfo[room].length);
+        socket.emit('joinSuccess',roomInfo[room].listenNum);
         socket.emit('test')
-        io.to(room).emit('someJoin',roomInfo[room].length);
+        io.to(room).emit('someJoin',roomInfo[room].list.length,roomInfo[room].listenNum);
     })
     //leave room
     socket.on('leave',function(data){
@@ -43,13 +44,13 @@ io.on('connection',function(socket){
             console.log(socket.nickname+'leave room')
             socket.leave(room);
             if(roomInfo[room]){
-                var index = roomInfo[room].indexOf(token);
+                var index = roomInfo[room].list.indexOf(token);
                 if (index !== -1) {
-                    roomInfo[room].splice(index, 1);
+                    roomInfo[room].list.splice(index, 1);
                 }
             }
             socket.emit('leaveSuccess')
-            io.to(room).emit('someLeave',roomInfo[room].length);
+            io.to(room).emit('someLeave',roomInfo[room].list.length,roomInfo[room].listenNum);
         }
         
     })
@@ -66,29 +67,31 @@ io.on('connection',function(socket){
             socket.join(room);
                 // 将用户昵称加入房间名单中
             if (!roomInfo[room]) {
-                roomInfo[room] = [];
+                roomInfo[room] = {};
+                roomInfo[room].listenNum = da.listenNum;
+                roomInfo[room].list = [];
             }
-            let index = roomInfo[room].indexOf(token);
+            let index = roomInfo[room].list.indexOf(token);
             if (index == -1) {
-                roomInfo[room].push(token);
+                roomInfo[room].list.push(token);
             }
-            socket.emit('joinSuccess',roomInfo[room].length);
-            io.to(room).emit('someJoin',roomInfo[room].length);
+            socket.emit('joinSuccess',roomInfo[room].listenNum);
+            io.to(room).emit('someJoin',roomInfo[room].list.length,roomInfo[room].listenNum);
         }
-        socket.emit('joinSuccess',roomInfo[room].length)
+        socket.emit('joinSuccess',roomInfo[room].listenNum)
     });
     //user leaves
      socket.on('disconnect', function() {
         if(room!==''){
             socket.leave(room);
             if(roomInfo[room]){
-                var index = roomInfo[room].indexOf(token);
+                var index = roomInfo[room].list.indexOf(token);
                 if (index !== -1) {
-                    roomInfo[room].splice(index, 1);
+                    roomInfo[room].list.splice(index, 1);
                 }
             }
             socket.emit('leaveSuccess')
-            io.to(room).emit('someLeave',roomInfo[room].length);
+            io.to(room).emit('someLeave',roomInfo[room].list.length,roomInfo[room].listenNum);
         }
     });
     //delete message
