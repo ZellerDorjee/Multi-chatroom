@@ -94,7 +94,6 @@ io.on('connection',function(socket){
             socket.emit('leaveSuccess')
             io.to(room).emit('someLeave',roomInfo[room].list.length,roomInfo[room].listenNum);
         }
-        console.log(socket.nickname+'disconnect')
     });
     //delete message
     socket.on('recallMsg', function(id, type) {

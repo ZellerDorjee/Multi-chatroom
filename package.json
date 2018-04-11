@@ -1,7 +1,7 @@
 {
   "name": "yjj-node",
   "version": "1.0.0",
-  "description": "a simple nodedemo",
+  "description": "a simple socket.io demo",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
