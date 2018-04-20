@@ -1,13 +1,20 @@
 
-# yjj-node
+# Multi-chatroom
 
 
 ## Install
 
 ```
-$ npm i
-$ npm start
+$ npm install
+
 ```
+## run
+
+```
+$ npm server
+
+```
+
 
 
 
