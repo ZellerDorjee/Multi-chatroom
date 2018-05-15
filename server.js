@@ -62,7 +62,7 @@ io.on('connection',function(socket){
     //detect is at room
     socket.on('detect', function(data) {
         let da=JSON.parse(data)
-        if(room!=da.roomId){
+        // if(room!=da.roomId){
             socket.nickname=da.username;
             room=da.roomId;
             socket.join(room);
@@ -78,7 +78,7 @@ io.on('connection',function(socket){
             roomInfo[room].listenNum = da.listenNum;
             socket.emit('joinSuccess',roomInfo[room].listenNum);
             io.to(room).emit('someJoin',roomInfo[room].list.length,roomInfo[room].listenNum);
-        }
+        // }
         socket.emit('joinSuccess',roomInfo[room].listenNum)
     });
     //user leaves
