@@ -1,14 +1,28 @@
-var express = require('express'), //引入express模块
-    app = express(),//创建实例
+var express = require('express'), 
+    app = express(),
     server = require('http').createServer(app),    
-    io = require('socket.io')(server, { wsEngine: 'ws' }),  //解决ws慢的问题
-    users = [];//当前在线数组
+    io = require('socket.io')(server, { wsEngine: 'ws' });  //解决ws慢的问题
      
 server.listen(3000, function () {
     var host = server.address().address;
     var port = server.address().port;
     console.log('Example app listening at http://%s:%s', host, port);
   });
+
+server.get('/',function (request, response){
+    response.send('get success')
+})
+
+server.post('/', function (request, response) {
+    response.send('post success')
+})
+
+
+
+server.use(express.static('dist'))
+
+
+
   //socket 部分
 
   // 房间名单
