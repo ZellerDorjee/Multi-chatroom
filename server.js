@@ -9,17 +9,17 @@ server.listen(3000, function () {
     console.log('Example app listening at http://%s:%s', host, port);
   });
 
-server.get('/',function (request, response){
+app.get('/',function (request, response){
     response.send('get success')
 })
 
-server.post('/', function (request, response) {
+app.post('/', function (request, response) {
     response.send('post success')
 })
 
 
 
-server.use(express.static('dist'))
+app.use(express.static('dist'))
 
 
 
